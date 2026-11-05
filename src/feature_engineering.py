@@ -31,6 +31,11 @@ def build_final_dataset(df_videos: pd.DataFrame, agg_comments: pd.DataFrame) -> 
 
     # CÁLCULO DA MÉTRICA ALVO: TAXA DE ENGAJAMENTO
     df_final['engagement_rate'] = (df_final['likes'] + df_final['total_comments_count']) / df_final['views']
-    # Cria uma classe Alvo para Classificação (Acima ou Abaixo da Mediana)
-    df_final['engagement_class'] = (df_final['engagement_rate'] >= df_final['engagement_rate'].median()).astype(int)
+    
+    # CLASSE ALVO PARA CLASSIFICAÇÃO:
+    # Utiliza-se a mediana da amostra como ponto de corte (threshold) devido à ausência 
+    # de um padrão universal de mercado para classificação de alto/baixo engajamento em vídeos digitais.
+    median_engagement = df_final['engagement_rate'].median()
+    df_final['engagement_class'] = (df_final['engagement_rate'] >= median_engagement).astype(int)
+    
     return df_final

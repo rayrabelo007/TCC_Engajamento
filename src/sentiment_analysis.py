@@ -20,14 +20,26 @@ def analyze_sentiments(
     """Aplica o pipeline de sentimento a cada comentário e concatena as colunas label/score ao DataFrame."""
     print("=> Analisando sentimentos dos comentários (Isso pode demorar um pouco)...")
     sentiments = []
+    
     for txt in tqdm(df[text_column]):
         try:
             res = sentiment_pipeline(txt[:max_length])[0]  # Limita o texto para o BERT
-            sentiments.append({'label': res['label'], 'score': res['score']})
+            raw_label = str(res['label']).upper()
+            
+            # Normalização de labels para garantir compatibilidade com a engenharia de atributos:
+            # Transforma variações comuns do Hugging Face em POS, NEG ou NEU
+            if 'POS' in raw_label or raw_label == 'LABEL_2':
+                label = 'POS'
+            elif 'NEG' in raw_label or raw_label == 'LABEL_0':
+                label = 'NEG'
+            else:
+                label = 'NEU'
+                
+            sentiments.append({'label': label, 'score': res['score']})
+            
         except (TypeError, ValueError, RuntimeError, KeyError, IndexError):
-            # TypeError: texto não é string (ex.: NaN); ValueError/RuntimeError: falha de inferência do modelo;
-            # KeyError/IndexError: saída do pipeline em formato inesperado
-            sentiments.append({'label': 'NEUTRAL', 'score': 0.5})
+            # Fallback seguro em caso de falha na inferência
+            sentiments.append({'label': 'NEU', 'score': 0.5})
 
     df_sent = pd.DataFrame(sentiments)
     return pd.concat([df, df_sent], axis=1)

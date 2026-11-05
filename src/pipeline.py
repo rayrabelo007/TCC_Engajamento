@@ -1,6 +1,7 @@
 # ==============================================================================
 # PIPELINE COMPLETO - PREDIÇÃO DE ENGAJAMENTO
 # ==============================================================================
+import os
 from typing import Any, Dict, Tuple
 
 import pandas as pd
@@ -16,15 +17,16 @@ from src.visualization import generate_all_visualizations
 from src.rag.rag_pipeline import run_rag_pipeline
 
 
-def run_pipeline() -> Tuple[pd.DataFrame, pd.DataFrame, Dict[str, Any]]:
+def run_pipeline() -> Tuple[pd.DataFrame, pd.DataFrame, Any]:
     """Executa o pipeline completo: coleta, sentimento, features, ML, exportação, visualização e RAG."""
+    
     # 1) Coleta
     df_comments, df_videos = get_video_comments_and_stats(
         config.YOUTUBE_API_KEY, config.VIDEO_IDS, config.MAX_COMMENTS_PER_VIDEO
     )
 
     if df_comments.empty:
-        raise ValueError("Nenhum comentário foi coletado. Verifique sua Chave de API e os IDs dos vídeos na Célula 3!")
+        raise ValueError("Nenhum comentário foi coletado. Verifique sua Chave de API e os IDs dos vídeos!")
 
     # 2) Pré-processamento
     df_comments = clean_comments(df_comments, min_length=config.MIN_CLEANED_TEXT_LENGTH)
@@ -45,25 +47,35 @@ def run_pipeline() -> Tuple[pd.DataFrame, pd.DataFrame, Dict[str, Any]]:
     model_results = train_and_evaluate(df_final)
     df_comparison = compare_models(df_final)
 
+    # Garante que o diretório de outputs existe
+    os.makedirs(config.OUTPUT_DIR, exist_ok=True)
+    metrics_dir = f"{config.OUTPUT_DIR}/metrics"
+    os.makedirs(metrics_dir, exist_ok=True)
+
     # 6) Exportação
     save_outputs(df_comments, df_final, config.OUTPUT_DIR)
-    if model_results:
+    
+    # Salvamento seguro de métricas (protegido contra dicionário vazio)
+    if model_results and 'mae' in model_results:
         save_metrics({
             'mae': model_results['mae'],
             'rmse': model_results['rmse'],
             'r2': model_results['r2_score'],
             'f1': model_results['f1_score'],
             'accuracy': model_results['accuracy'],
-        }, f"{config.OUTPUT_DIR}/metrics")
+        }, metrics_dir)
+        
     if not df_comparison.empty:
-        save_model_comparison(df_comparison, f"{config.OUTPUT_DIR}/metrics")
+        save_model_comparison(df_comparison, metrics_dir)
 
     # 7) Visualização
+    figures_dir = f"{config.OUTPUT_DIR}/figures"
     generate_all_visualizations(
-        df_comments, df_final, model_results, f"{config.OUTPUT_DIR}/figures", df_comparison
+        df_comments, df_final, model_results, figures_dir, df_comparison
     )
 
     # 8) RAG (indexação dos comentários para recuperação por similaridade; não afeta o ML)
     retriever = run_rag_pipeline(df_comments)
 
+    print("\n[SUCESSO] Pipeline executado de ponta a ponta com êxito!")
     return df_comments, df_final, retriever

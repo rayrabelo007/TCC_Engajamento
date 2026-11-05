@@ -68,7 +68,13 @@ def explain_prediction(
     similar_comments = None
     if retriever is not None:
         query = f"comentários sobre o vídeo {video_row.get('video_title', '')}"
-        similar_comments = retrieve_top_k(retriever, query, top_k=top_k)
+        # Passa o video_id do vídeo atual para garantir que os comentários recuperados sejam estritamente dele
+        similar_comments = retrieve_top_k(
+            retriever, 
+            query, 
+            top_k=top_k, 
+            target_video_id=video_row.get('video_id')
+        )
 
     prompt = build_prediction_prompt(video_row, feature_importance_summary, similar_comments)
 

@@ -49,17 +49,24 @@ def train_and_evaluate(
     n_splits: int = 5,
 ) -> Dict[str, Any]:
     """Treina RandomForest de regressão/classificação com holdout e validação cruzada K-Fold."""
-    # Variáveis de entrada (Features de Sentimento) e Saída (Alvo)
-    X, y_reg, y_clf = prepare_features_and_targets(df_final, feature_cols)
-
+    
     print("\n==========================================")
     print("             RESULTADOS DE ML             ")
     print("==========================================")
 
+    # AVISO METODOLÓGICO PARA A BANCA (Tamanho da Amostra)
+    sample_size = len(df_final)
+    if sample_size < 30:
+        print(f"[AVISO METODOLÓGICO]: Amostra reduzida ({sample_size} vídeos).")
+        print("-> Este estudo caracteriza-se como uma Prova de Conceito (PoC) exploratória.")
+    else:
+        print(f"[INFO]: Tamanho da amostra adequado para análise ({sample_size} vídeos).")
+
     results = {}
 
-    # Se houver dados suficientes, treina os modelos
-    if len(df_final) >= 2:
+    if sample_size >= 2:
+        X, y_reg, y_clf = prepare_features_and_targets(df_final, feature_cols)
+
         X_train, X_test, y_reg_train, y_reg_test, y_clf_train, y_clf_test = train_test_split(
             X, y_reg, y_clf, test_size=test_size, random_state=random_state
         )
@@ -81,17 +88,21 @@ def train_and_evaluate(
         print(f"Classificação (Random Forest) -> Acurácia: {acc:.4f} | F1: {f1:.4f}")
 
         # VALIDAÇÃO CRUZADA (K-Fold) sobre todo o dataset
-        cv_splits = min(n_splits, len(df_final))
-        kf = KFold(n_splits=cv_splits, shuffle=True, random_state=random_state)
-
-        cv_r2_scores = cross_val_score(
-            RandomForestRegressor(random_state=random_state), X, y_reg, cv=kf, scoring='r2'
-        )
-        cv_acc_scores = cross_val_score(
-            RandomForestClassifier(random_state=random_state), X, y_clf, cv=kf, scoring='accuracy'
-        )
-        print(f"Validação Cruzada ({cv_splits}-Fold) -> R² médio: {cv_r2_scores.mean():.4f}")
-        print(f"Validação Cruzada ({cv_splits}-Fold) -> Acurácia média: {cv_acc_scores.mean():.4f}")
+        cv_splits = min(n_splits, sample_size)
+        if cv_splits >= 2:
+            kf = KFold(n_splits=cv_splits, shuffle=True, random_state=random_state)
+            cv_r2_scores = cross_val_score(
+                RandomForestRegressor(random_state=random_state), X, y_reg, cv=kf, scoring='r2'
+            )
+            cv_acc_scores = cross_val_score(
+                RandomForestClassifier(random_state=random_state), X, y_clf, cv=kf, scoring='accuracy'
+            )
+            print(f"Validação Cruzada ({cv_splits}-Fold) -> R² médio: {cv_r2_scores.mean():.4f}")
+            print(f"Validação Cruzada ({cv_splits}-Fold) -> Acurácia média: {cv_acc_scores.mean():.4f}")
+            cv_r2_mean = cv_r2_scores.mean()
+            cv_acc_mean = cv_acc_scores.mean()
+        else:
+            cv_r2_mean, cv_acc_mean = 0.0, 0.0
 
         results = {
             'reg_model': reg_model,
@@ -101,8 +112,8 @@ def train_and_evaluate(
             'r2_score': r2,
             'accuracy': acc,
             'f1_score': f1,
-            'cv_r2_mean': cv_r2_scores.mean(),
-            'cv_accuracy_mean': cv_acc_scores.mean(),
+            'cv_r2_mean': cv_r2_mean,
+            'cv_accuracy_mean': cv_acc_mean,
         }
     else:
         print("Aviso: Adicione mais de 2 IDs de vídeos para calcular as métricas de Machine Learning.")

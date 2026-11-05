@@ -76,19 +76,33 @@ def plot_engagement_rate_distribution(
 
 
 def plot_sentiment_vs_engagement(df_final: pd.DataFrame, output_dir: str) -> None:
-    """Gera um gráfico de dispersão de sentimento positivo vs taxa de engajamento, com linha de tendência."""
-    x = df_final['prop_positivo']
+    """Gera gráficos de dispersão comparando a proporção de sentimentos (positivo e negativo) vs taxa de engajamento."""
+    fig, (ax_pos, ax_neg) = plt.subplots(1, 2, figsize=(11, 4.5))
+
     y = df_final['engagement_rate']
 
-    fig, ax = plt.subplots(figsize=(6, 5))
-    ax.scatter(x, y, color="#C44E52")
+    # Sentimento Positivo vs Engajamento
+    x_pos = df_final['prop_positivo']
+    ax_pos.scatter(x_pos, y, color="#4C72B0")
     if len(df_final) >= 2:
-        coeffs = np.polyfit(x, y, 1)
-        trend_x = np.linspace(x.min(), x.max(), 100)
-        ax.plot(trend_x, np.polyval(coeffs, trend_x), color="#333333", linestyle="--")
-    ax.set_title("Proporção de Sentimento Positivo vs Taxa de Engajamento")
-    ax.set_xlabel("Proporção de Comentários Positivos")
-    ax.set_ylabel("Taxa de Engajamento")
+        coeffs_pos = np.polyfit(x_pos, y, 1)
+        trend_x_pos = np.linspace(x_pos.min(), x_pos.max(), 100)
+        ax_pos.plot(trend_x_pos, np.polyval(coeffs_pos, trend_x_pos), color="#333333", linestyle="--")
+    ax_pos.set_title("Sentimento Positivo vs Engajamento")
+    ax_pos.set_xlabel("Proporção Positivos")
+    ax_pos.set_ylabel("Taxa de Engajamento")
+
+    # Sentimento Negativo vs Engajamento
+    x_neg = df_final['prop_negativo']
+    ax_neg.scatter(x_neg, y, color="#C44E52")
+    if len(df_final) >= 2:
+        coeffs_neg = np.polyfit(x_neg, y, 1)
+        trend_x_neg = np.linspace(x_neg.min(), x_neg.max(), 100)
+        ax_neg.plot(trend_x_neg, np.polyval(coeffs_neg, trend_x_neg), color="#333333", linestyle="--")
+    ax_neg.set_title("Sentimento Negativo vs Engajamento")
+    ax_neg.set_xlabel("Proporção Negativos")
+    ax_neg.set_ylabel("Taxa de Engajamento")
+
     _save_and_close(fig, output_dir, "sentimento_vs_engajamento.png")
 
 

@@ -1,0 +1,331 @@
+% =====================================================================
+% Projeto de TCC — Predição de Engajamento em Vídeos do YouTube via
+% Análise de Sentimento de Comentários
+%
+% Este documento segue a estrutura do template oficial do
+% DECOM/UFRO (latex_unir_dacc_tcc_1406503824.pdf) e foi preenchido
+% de acordo com o que está definido em TAREFAS.md, PROTOCOLO_AMOSTRAGEM.md
+% e ARCHITECTURE.md do repositório do pipeline (não confundir com o
+% rascunho antigo/descartado sobre Meta Ads e tráfego pago).
+%
+% Trechos marcados como \pendente{...} ainda não podem ser escritos
+% com conteúdo real — ou porque dependem de aprovação da orientadora,
+% ou porque dependem de dados que ainda não existem (nenhum dado real
+% foi coletado; ver regra do projeto contra inventar resultados/métricas).
+% =====================================================================
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage[a4paper,left=3cm,right=2cm,top=3cm,bottom=2cm]{geometry}
+\usepackage{indentfirst}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{longtable}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
+
+\onehalfspacing
+
+% Marca visualmente qualquer trecho que ainda precisa ser escrito/decidido
+\newcommand{\pendente}[1]{\textcolor{red}{\textbf{[PENDENTE: #1]}}}
+
+\begin{document}
+
+% ---------------------------------------------------------------------
+% CAPA
+% ---------------------------------------------------------------------
+\begin{titlepage}
+\begin{center}
+UNIVERSIDADE FEDERAL DE RONDÔNIA\\
+DEPARTAMENTO ACADÊMICO DE CIÊNCIA DA COMPUTAÇÃO\\
+CURSO DE BACHARELADO EM CIÊNCIA DA COMPUTAÇÃO
+
+\vspace{4cm}
+{\Large RAYSSA RABELO FEITOSA}
+
+\vspace{4cm}
+{\bfseries\Large PREDIÇÃO DE ENGAJAMENTO EM VÍDEOS DO YOUTUBE A PARTIR DA ANÁLISE DE SENTIMENTO DE COMENTÁRIOS}
+
+\vspace{0.5cm}
+\pendente{Confirmar título final com a orientadora — este é provisório, baseado no escopo definido em TAREFAS.md.}
+
+\vspace{4cm}
+PROJETO DE TRABALHO DE CONCLUSÃO DE CURSO DE GRADUAÇÃO
+
+\vfill
+PORTO VELHO\\
+2026
+\end{center}
+\end{titlepage}
+
+% ---------------------------------------------------------------------
+% FOLHA DE ROSTO
+% ---------------------------------------------------------------------
+\begin{titlepage}
+\begin{center}
+{\Large RAYSSA RABELO FEITOSA}
+
+\vspace{2cm}
+{\bfseries\Large PREDIÇÃO DE ENGAJAMENTO EM VÍDEOS DO YOUTUBE A PARTIR DA ANÁLISE DE SENTIMENTO DE COMENTÁRIOS}
+\end{center}
+
+\vspace{2cm}
+\hfill
+\begin{minipage}{0.55\textwidth}
+Projeto de Conclusão de Curso, apresentado à disciplina de Trabalho de Conclusão de Curso 1, do Curso Superior de Ciência da Computação -- da Universidade Federal de Rondônia, como requisito parcial para obtenção do título de Bacharel/Licenciado em Ciência da Computação.
+
+\vspace{0.5cm}
+Orientador(a): \pendente{confirmar nome com a Rayssa}\\
+Universidade Federal de Rondônia
+
+\vspace{0.3cm}
+Coorientador(a): \pendente{confirmar nome, se houver}\\
+Universidade Federal de Rondônia
+\end{minipage}
+
+\vfill
+\begin{center}
+PORTO VELHO\\
+2026
+\end{center}
+\end{titlepage}
+
+% ---------------------------------------------------------------------
+% RESUMO
+% ---------------------------------------------------------------------
+\newpage
+\begin{center}
+\textbf{RESUMO}
+\end{center}
+\vspace{0.5cm}
+
+O YouTube consolidou-se como uma das principais plataformas de conteúdo em vídeo, permitindo interação direta entre criadores e público por meio de comentários, curtidas e visualizações. Compreender os fatores associados ao engajamento do público é relevante tanto para criadores de conteúdo quanto para a pesquisa em comportamento do usuário em mídias digitais. Entre esses fatores está o sentimento expresso pelos espectadores nos comentários, cuja relação com métricas objetivas de engajamento ainda carece de validação estatística rigorosa. Este projeto propõe construir e avaliar um pipeline de predição de engajamento em vídeos do YouTube a partir de características extraídas da análise de sentimento dos comentários, comparando modelos que incorporam essas características com modelos baseados apenas em metadados do vídeo e do canal. A pesquisa caracteriza-se como aplicada, de abordagem quantitativa e natureza observacional, com validação do pipeline em dados sintéticos de relação causal conhecida antes de qualquer uso de dados reais. Serão testadas três hipóteses relativas à correlação entre sentimento e engajamento, ao ganho preditivo das características de sentimento e à significância estatística desse ganho. Espera-se que os resultados contribuam para uma compreensão mais rigorosa da relação entre tom emocional do público e desempenho de conteúdo em vídeo.
+
+\vspace{0.5cm}
+\noindent\textbf{Palavras-chave}: YouTube. Engajamento. Análise de Sentimentos. Processamento de Linguagem Natural. Aprendizado de Máquina.
+
+% ---------------------------------------------------------------------
+% ABSTRACT
+% ---------------------------------------------------------------------
+\newpage
+\begin{center}
+\textbf{ABSTRACT}
+\end{center}
+\vspace{0.5cm}
+
+YouTube has become one of the leading video content platforms, enabling direct interaction between creators and audiences through comments, likes, and views. Understanding the factors associated with audience engagement is relevant both for content creators and for research on user behavior in digital media. Among these factors is the sentiment expressed by viewers in comments, whose relationship with objective engagement metrics still lacks rigorous statistical validation. This project proposes to build and evaluate an engagement prediction pipeline for YouTube videos based on features derived from comment sentiment analysis, comparing models that incorporate these features against models based solely on video and channel metadata. The research is applied, quantitative, and observational in nature, with the pipeline validated on synthetic data with a known causal relationship before any use of real data. Three hypotheses will be tested regarding the correlation between sentiment and engagement, the predictive gain from sentiment features, and the statistical significance of that gain. The results are expected to contribute to a more rigorous understanding of the relationship between audience emotional tone and video content performance.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords}: YouTube. Engagement. Sentiment Analysis. Natural Language Processing. Machine Learning.
+
+% ---------------------------------------------------------------------
+% SUMÁRIO
+% ---------------------------------------------------------------------
+\newpage
+\tableofcontents
+\newpage
+
+% =====================================================================
+% 1. INTRODUÇÃO
+% =====================================================================
+\section{Introdução}
+
+O YouTube consolidou-se como uma das principais plataformas de conteúdo em vídeo, permitindo a interação direta entre criadores e público por meio de comentários, curtidas e visualizações. A efetividade e o alcance de um vídeo são frequentemente avaliados por métricas de engajamento, que combinam essas formas de interação do público (\pendente{citar fonte que discuta a definição de engajamento em mídias sociais}).
+
+Paralelamente, os avanços em Inteligência Artificial, particularmente no campo do Processamento de Linguagem Natural (PLN), possibilitaram o desenvolvimento de técnicas capazes de identificar automaticamente a polaridade emocional de grandes volumes de texto. A análise de sentimentos permite classificar comentários como positivos, negativos ou neutros, transformando reações subjetivas do público em variáveis quantificáveis (\pendente{citar fonte sobre análise de sentimentos e PLN}).
+
+Apesar de existirem estudos consolidados tanto sobre engajamento em mídias digitais quanto sobre análise de sentimentos baseada em IA, a relação entre o sentimento expresso pelo público nos comentários e o desempenho objetivo de um vídeo ainda é pouco explorada com rigor estatístico -- em particular, no que se refere a evitar vazamento de dados entre variáveis preditoras e a variável-alvo, a comparar contra baselines adequados e a controlar por variáveis de confusão como o tamanho do canal.
+
+\subsection{Justificativa}
+
+A criação de conteúdo em vídeo carece, em grande parte, de ferramentas analíticas estruturadas para compreender o papel do sentimento do público no desempenho de um vídeo. Ferramentas automatizadas de análise de sentimentos podem preencher essa lacuna, mas apenas se aplicadas com desenho experimental que evite conclusões espúrias -- por exemplo, features que vazam informação da própria variável-alvo, ou correlações que na verdade refletem apenas a popularidade do canal. Justifica-se, portanto, um estudo que construa esse pipeline com validação estatística explícita (testes de hipótese, correção para múltiplas comparações, tamanho de efeito) e que the valide antes em dados sintéticos de relação conhecida, antes de aplicá-lo a dados reais.
+
+\subsection{Problema de pesquisa}
+
+É possível prever o engajamento de vídeos do YouTube a partir de características extraídas do sentimento expresso nos comentários dos espectadores, mesmo controlando por variáveis de popularidade do canal?
+
+\subsection{Objetivo geral}
+
+Desenvolver e avaliar um pipeline de predição de engajamento em vídeos do YouTube a partir de características de sentimento extraídas dos comentários, comparando modelos com e sem essas características.
+
+\subsection{Objetivos específicos}
+
+\begin{itemize}
+    \item Construir uma fixture de dados sintéticos com relação causal conhecida, permitindo validar o pipeline sem depender de dados reais;
+    \item Implementar e comparar dois modelos de análise de sentimento (um multilíngue e um específico para português) sobre os comentários coletados;
+    \item Garantir a ausência de vazamento de dados entre as variáveis preditoras e a variável-alvo, inclusive no cálculo de limiares de classificação;
+    \item Extrair características de sentimento (proporções, média e desvio-padrão) e de metadados do vídeo/canal (inscritos, idade, duração);
+    \item Comparar modelos preditivos (regressão e classificação) contra baselines obrigatórios (modelo ingênuo e modelo treinado somente com metadados);
+    \item Testar estatisticamente as hipóteses H1, H2 e H3, reportando tamanho de efeito e não apenas significância;
+    \item Definir, com aprovação da orientadora, o protocolo de amostragem e executar a coleta de uma amostra real de vídeos.
+\end{itemize}
+
+\subsection{Hipóteses}
+
+\textbf{H1:} A proporção de comentários positivos em um vídeo correlaciona-se positivamente com sua taxa de engajamento, mesmo controlando estatisticamente pelo tamanho do canal (log do número de inscritos).
+
+\textbf{H2:} Modelos preditivos que incorporam características de sentimento apresentam desempenho preditivo superior a modelos que utilizam apenas metadados do vídeo e do canal.
+
+\textbf{H3:} A diferença de desempenho entre esses dois grupos de modelos é estatisticamente significativa.
+
+% =====================================================================
+% 2. REVISÃO DE LITERATURA
+% =====================================================================
+\section{Revisão de Literatura}
+
+\pendente{Esta seção ainda precisa ser escrita com base em fontes verificadas. Abaixo estão apenas os tópicos que cada subseção deve cobrir -- nenhuma citação foi inserida porque nenhuma foi verificada. Antes de citar qualquer autor, confirme que o artigo existe de fato (Google Scholar, Scopus, DOI) -- referência inventada é motivo de reprovação em banca.}
+
+\subsection{Engajamento em mídias sociais e no YouTube}
+\pendente{Pesquisar e citar fontes que definam engajamento em mídias sociais, as métricas usadas (likes, comentários, visualizações, taxa de engajamento) e estudos que relacionem essas métricas ao desempenho de conteúdo em vídeo.}
+
+\subsection{Processamento de linguagem natural e análise de sentimentos}
+\pendente{Pesquisar e citar fontes fundamentais sobre PLN e análise de sentimentos: o que é, como transforma texto em variável quantitativa, principais abordagens (léxicos vs. aprendizado de máquina vs. Transformers).}
+
+\subsection{Modelos baseados em Transformers/BERT para sentimento em português}
+\pendente{Pesquisar e citar fontes sobre modelos BERT/Transformer aplicados a sentimento em português (ex.: BERTimbau e derivados), e sobre os modelos especificamente usados neste projeto -- ver Seção~\ref{sec:sentimento}.}
+
+\subsection{Predição de engajamento com aprendizado de máquina}
+\pendente{Pesquisar e citar estudos que usem Random Forest, XGBoost, regressão linear/logística ou modelos similares para prever métricas de engajamento ou popularidade de conteúdo digital.}
+
+\subsection{Lacuna na literatura}
+\pendente{Sintetizar, com base nas subseções acima, por que ainda há uma lacuna relevante em integrar análise de sentimento de comentários com predição rigorosa (sem vazamento de dados, com baselines e testes de hipótese) de engajamento em vídeos.}
+
+% =====================================================================
+% 3. METODOLOGIA
+% =====================================================================
+\section{Metodologia}
+
+\subsection{Tipo e abordagem da pesquisa}
+
+A presente pesquisa caracteriza-se como um estudo de natureza aplicada, com abordagem quantitativa e delineamento observacional (não experimental): os vídeos analisados já existem publicados no YouTube, não sendo criados ou manipulados para fins do estudo. A validação de todo o pipeline de código é feita inicialmente sobre dados sintéticos gerados com relação causal conhecida, e somente após essa validação -- e mediante aprovação do protocolo de amostragem pela orientadora -- será realizada a coleta de dados reais.
+
+\subsection{Unidade de análise e protocolo amostral}
+
+A unidade de análise é o vídeo. Cada vídeo é caracterizado por metadados do canal e do conteúdo, pelos comentários coletados e por agregações de sentimento calculadas sobre esses comentários.
+
+\pendente{Os critérios de inclusão e exclusão (período de publicação, categoria temática, visualizações/comentários mínimos, definição operacional de "conteúdo publicitário", estratégia de amostragem e estratificação) ainda não foram definidos/aprovados pela orientadora -- ver \texttt{PROTOCOLO\_AMOSTRAGEM.md}. Nenhuma coleta real ocorre antes dessa aprovação.}
+
+A seleção final de vídeos será registrada em \texttt{data/videos\_selecionados.csv}, com as colunas \texttt{video\_id}, \texttt{canal\_id}, \texttt{canal\_nome}, \texttt{inscritos}, \texttt{categoria}, \texttt{data\_publicacao} e \texttt{estrato}, servindo como fonte única e reprodutível da amostra coletada.
+
+\subsection{Coleta de dados}
+
+A coleta será realizada por meio da YouTube Data API v3, buscando estatísticas do vídeo (visualizações, curtidas, contagem de comentários) e até 200 comentários por vídeo, ordenados por data de publicação (\texttt{order="time"}) em vez de por relevância -- a ordenação por relevância tende a retornar os comentários mais curtidos, sistematicamente mais positivos, o que introduziria viés na relação entre sentimento e engajamento. As respostas cruas da API serão armazenadas em cache local (\texttt{.cache/\{video\_id\}.json}), evitando chamadas repetidas e permitindo retomar a coleta em caso de interrupção sem perda de progresso. Vídeos excluídos por qualquer critério (comentários desabilitados, abaixo do mínimo de comentários/visualizações etc.) serão registrados em \texttt{outputs/fluxo\_amostral.csv}, compondo o diagrama de fluxo amostral do trabalho final.
+
+\subsection{Pré-processamento dos comentários}
+
+Os comentários coletados passam por limpeza de texto que remove URLs, menções (\texttt{@usuário}), hashtags e espaçamento redundante, preservando emojis -- que carregam sinal relevante de sentimento em comentários do YouTube. Comentários cujo texto limpo tenha menos de 5 caracteres são descartados.
+
+\subsection{Análise de sentimentos}
+\label{sec:sentimento}
+
+Serão utilizados e comparados dois modelos de análise de sentimento da biblioteca Hugging Face \texttt{transformers}:
+
+\begin{itemize}
+    \item \texttt{lxyuan/distilbert-base-multilingual-cased-sentiments-student} -- modelo multilíngue, com rótulos \texttt{positive}/\texttt{neutral}/\texttt{negative};
+    \item \texttt{pysentimiento/bertweet-pt-sentiment} -- modelo específico para português, com rótulos \texttt{POS}/\texttt{NEG}/\texttt{NEU}.
+\end{itemize}
+
+Os rótulos de ambos os modelos são normalizados para um vocabulário comum (\texttt{positive}/\texttt{negative}/\texttt{neutral}). Falhas de inferência são contabilizadas e reportadas, em vez de silenciosamente atribuídas à classe neutra.
+
+\subsection{Engenharia de atributos}
+
+As variáveis preditoras são divididas em dois grupos, para permitir testar diretamente a H2:
+
+\begin{itemize}
+    \item \textbf{Metadados} (\texttt{METADATA\_FEATURES}): logaritmo do número de inscritos, idade do vídeo em dias, duração do vídeo, tamanho médio do texto dos comentários, contagem média de palavras;
+    \item \textbf{Sentimento} (\texttt{SENTIMENT\_FEATURES}): média e desvio-padrão do sentimento numérico por vídeo, proporção de comentários positivos, negativos e neutros.
+\end{itemize}
+
+A variável-alvo (taxa de engajamento) é calculada a partir de curtidas e visualizações do vídeo. \pendente{A fórmula exata -- apenas curtidas/visualizações, ou (curtidas + comentários)/visualizações -- depende de decisão da orientadora, pois a segunda opção exige excluir qualquer contagem de comentários das features, sob risco de vazamento de dados.} O limiar usado para classificação binária de engajamento (alto/baixo) é calculado exclusivamente sobre os dados de treino em cada partição de validação cruzada, nunca sobre o conjunto completo.
+
+\subsection{Modelagem preditiva}
+
+Os modelos são organizados em uma tabela comparativa cujas três primeiras linhas são baselines obrigatórios: um regressor ingênuo (média), um classificador ingênuo (classe mais frequente) e um modelo treinado apenas com \texttt{METADATA\_FEATURES}. Em seguida são comparados Regressão Linear/Logística, Random Forest e XGBoost, cada um treinado tanto apenas com metadados quanto com metadados e sentimento combinados. Todo pré-processamento numérico (imputação pela mediana e padronização) ocorre dentro do mesmo pipeline do \texttt{scikit-learn} usado para treino, evitando vazamento de estatísticas do conjunto de teste. Todas as etapas com componente aleatório usam semente fixa (\texttt{random\_state=42}) para reprodutibilidade.
+
+Um teste de tamanho amostral mínimo é aplicado antes de qualquer treino: amostras com menos de 8 vídeos impedem o treinamento; entre 8 e 50, os resultados são marcados explicitamente como não confiáveis; acima de 50, o treinamento ocorre normalmente.
+
+\subsection{Testes das hipóteses}
+
+\textbf{H1} é testada por meio da correlação de Spearman entre a proporção de comentários positivos e a taxa de engajamento, complementada por correlação parcial controlando o logaritmo do número de inscritos -- necessária para não confundir efeito de sentimento com efeito de popularidade do canal.
+
+\textbf{H2} é testada comparando, nos mesmos folds de validação cruzada estratificada, o desempenho de um modelo treinado apenas com metadados contra um modelo treinado com metadados e sentimento.
+
+\textbf{H3} é testada por meio do teste de Wilcoxon pareado sobre os escores por fold obtidos no teste de H2, reportando estatística, valor-p e tamanho de efeito, complementado por importância de permutação das características de sentimento no modelo completo.
+
+Em todos os casos, o tamanho do efeito é reportado junto ao valor-p; resultados com amostra menor que 50 vídeos são marcados como exploratórios; e um resultado nulo (sentimento não ajuda a prever engajamento) é considerado um resultado válido, reportado com a mesma clareza que um resultado positivo.
+
+\subsection{Considerações éticas e limitações}
+
+A pesquisa utiliza apenas comentários públicos, sem coleta de dados pessoais além do identificador público de usuário exposto pela própria API do YouTube. Nenhum dado real é utilizado antes da aprovação do protocolo de amostragem pela orientadora; toda validação de código até esse ponto usa exclusivamente dados sintéticos. Uma camada adicional de geração de explicações em linguagem natural (RAG) permanece opcional e fora do escopo de validação estatística deste projeto, dado que suas explicações não têm acesso direto ao modelo de aprendizado de máquina e não devem ser tomadas como evidência.
+
+% =====================================================================
+% 4. PLANEJAMENTO DO TRABALHO
+% =====================================================================
+\section{Planejamento do Trabalho}
+
+\pendente{O cronograma abaixo lista as atividades na ordem definida em TAREFAS.md, mas os meses/semanas exatos ainda precisam ser definidos com a orientadora -- preencher as células antes de considerar este cronograma final.}
+
+\begin{longtable}{|p{7cm}|c|c|c|c|}
+\hline
+\textbf{Atividade} & \textbf{Jul} & \textbf{Ago} & \textbf{Set} & \textbf{Out} \\
+\hline
+Fixture sintética e testes de regressão & & & & \\
+\hline
+Correção da análise de sentimento (modelos, rótulos, pré-processamento) & & & & \\
+\hline
+Eliminação de vazamento de dados & & & & \\
+\hline
+Restauração de features e pipeline de pré-processamento & & & & \\
+\hline
+Baselines obrigatórios & & & & \\
+\hline
+Testes das hipóteses H1, H2 e H3 & & & & \\
+\hline
+Aprovação do protocolo de amostragem pela orientadora & & & & \\
+\hline
+Coleta real de dados & & & & \\
+\hline
+Análise dos resultados reais & & & & \\
+\hline
+Escrita do trabalho & & & & \\
+\hline
+Revisão final e normalização (ABNT) & & & & \\
+\hline
+\end{longtable}
+
+\subsection{Da proposta ao projeto}
+
+\pendente{Descrever aqui, quando pertinente, o que já foi desenvolvido até a entrega deste projeto (por exemplo, quais tarefas de TAREFAS.md já estão concluídas) e o que ainda falta para a defesa do projeto de TCC 1.}
+
+% =====================================================================
+% 5. RESULTADOS ESPERADOS
+% =====================================================================
+\section{Resultados Esperados}
+
+Espera-se que este estudo produza um pipeline reprodutível e estatisticamente rigoroso para investigar a relação entre o sentimento expresso nos comentários de vídeos do YouTube e sua taxa de engajamento. Especificamente, espera-se verificar se a proporção de sentimento positivo se associa à taxa de engajamento mesmo controlando pelo tamanho do canal (H1), se características de sentimento agregam poder preditivo a modelos baseados apenas em metadados (H2), e se esse ganho, quando existente, é estatisticamente significativo (H3).
+
+\pendente{Um resultado nulo -- isto é, ausência de associação ou de ganho preditivo -- é um resultado cientificamente válido e será reportado com a mesma transparência que um resultado positivo, conforme estabelecido na metodologia. Nenhum número específico pode ser antecipado aqui antes da coleta e análise de dados reais.}
+
+% =====================================================================
+% REFERÊNCIAS
+% =====================================================================
+\newpage
+\begin{center}
+\textbf{Referências}
+\end{center}
+\vspace{0.5cm}
+
+\pendente{Nenhuma referência foi inserida ainda. Adicione aqui apenas fontes que você verificou existirem de fato (com DOI, link direto ao periódico/editora, ou registro em base indexada). Formato ABNT sugerido:}
+
+\begin{verbatim}
+SOBRENOME, Nome. Título da obra. Cidade: Editora, ano.
+
+SOBRENOME, Nome. Título do artigo. Nome do Periódico, v. X, n. Y,
+p. inicial-final, ano.
+\end{verbatim}
+
+\end{document}
